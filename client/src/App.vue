@@ -1,3 +1,3 @@
 <template>
-  file-upload client
+  <a-button type="primary">file upload client</a-button>
 </template>
