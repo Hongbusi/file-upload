@@ -12,7 +12,7 @@
     "url": "git+https://github.com/Hongbusi/file-upload.git"
   },
   "author": "Hongbusi",
-  "license": "MIT",
+  "license": "ISC",
   "bugs": {
     "url": "https://github.com/Hongbusi/file-upload/issues"
   },
