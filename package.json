@@ -1,0 +1,25 @@
+{
+  "name": "file-upload",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "prepare": "husky install"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Hongbusi/file-upload.git"
+  },
+  "author": "Hongbusi",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Hongbusi/file-upload/issues"
+  },
+  "homepage": "https://github.com/Hongbusi/file-upload#readme",
+  "devDependencies": {
+    "@commitlint/cli": "^16.0.0",
+    "@commitlint/config-conventional": "^16.0.0",
+    "husky": "^7.0.4"
+  }
+}
