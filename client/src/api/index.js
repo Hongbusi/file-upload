@@ -1,7 +1,7 @@
 import service from '@/utils/request';
 
-export function index(data) {
-  return request({
+export function index() {
+  return service({
     url: '/',
     method: 'get'
   });

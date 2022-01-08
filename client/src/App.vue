@@ -13,11 +13,6 @@
 </template>
 
 <script setup>
-// import service from '@/utils/request';
-
-// service.get('/').then(res => {
-//   console.log(res);
-// })
 let selectedFile = null;
 
 const handleFileChange = (e) => {
