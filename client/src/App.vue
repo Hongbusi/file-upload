@@ -12,7 +12,7 @@
   </a-layout>
 </template>
 
-<script lang="ts" setup>
+<script setup>
 // import service from '@/utils/request';
 
 // service.get('/').then(res => {
