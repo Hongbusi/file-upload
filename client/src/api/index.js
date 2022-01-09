@@ -22,11 +22,12 @@ export function check(data) {
   });
 }
 
-export function upload(data) {
+export function upload(data, { onUploadProgress }) {
   return service({
     url: '/upload',
     method: 'post',
-    data
+    data,
+    onUploadProgress
   });
 }
 
