@@ -9,6 +9,14 @@ class HomeController extends Controller {
     this.ctx.body = 'Hello world';
   }
 
+  async fileList() {
+    const { ctx, config  } = this;
+    let data = await fse.readdir(config.UPLOAD_DIR);
+    ctx.body = {
+      data
+    }
+  }
+
   async getUploadList(dirPath) {
     // 过滤诡异文件的隐藏文件，比如 .DS_sotre
     return fse.existsSync(dirPath) ? (await fse.readdir(dirPath)).filter(name => name[0] !== '.') : [];
@@ -81,7 +89,6 @@ class HomeController extends Controller {
       message: '上传成功',
       url: `/public/${filename}`
     }
-
   }
 }
 

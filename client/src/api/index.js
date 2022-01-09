@@ -7,6 +7,13 @@ export function index() {
   });
 }
 
+export function file() {
+  return service({
+    url: '/file',
+    method: 'get'
+  });
+}
+
 export function check(data) {
   return service({
     url: '/check',

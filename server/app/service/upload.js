@@ -4,11 +4,6 @@ const fse = require('fs-extra');
 const Service = require('egg').Service;
 
 class UploadService extends Service {
-
-  extractExt(filename) {
-    return filename.slice(filename.lastIndexOf('.'), filename.length);
-  }
-
   async mergeFiles(files, dest, size) {
     const pipeStream = (filePath, writeStream) =>
       new Promise(resolve => {
@@ -45,6 +40,7 @@ class UploadService extends Service {
     chunkPaths.sort((a, b) => a.split('-')[1] - b.split('-')[1]);
     chunkPaths = chunkPaths.map(cp => path.resolve(chunkDir, cp)); // 转成文件路径
     await this.mergeFiles(chunkPaths, filePath, size);
+    fse.removeSync(chunkDir);
   }
 }
 module.exports = UploadService;
