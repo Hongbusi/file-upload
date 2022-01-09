@@ -13,12 +13,14 @@
 </template>
 
 <script setup>
+import { ref } from 'vue';
 import sparkMd5 from 'spark-md5';
 import { message } from 'ant-design-vue';
-import { ref } from 'vue';
+import { check, upload } from '@/api';
 
 const CHUNK_SIZE = 1 * 1024 * 1024; // 1M
 let selectedFile = null;
+let chunks = [];
 let hashProgress = ref(0);
 
 const handleFileChange = (e) => {
@@ -88,7 +90,6 @@ const calculateHashIdle = async chunks => {
 }
 
 const calculateHashSample = file => {
-  console.log(file);
   return new Promise(resolve => {
     const spark = new sparkMd5.ArrayBuffer();
     const reader = new FileReader();
@@ -124,6 +125,85 @@ const calculateHashSample = file => {
   });
 }
 
+// 返回文件后缀名
+const ext = filename => {
+  return filename.split('.').pop();
+}
+
+const sendRequest = (chunks, limit = 4) => {
+  return new Promise((resolve, reject) => {
+    const len = chunks.length;
+    let counter = 0;
+    let isStop = false;
+
+    const start = async () => {
+      if (isStop) {
+        return;
+      }
+
+      const task = chunks.shift();
+
+      if (task) {
+        const { form, index } = task;
+
+        try {
+          await upload(form);
+
+          if (counter === len - 1) {
+            resolve();
+          } else {
+            counter++;
+            start();
+          }
+        } catch (error) {
+          // 当前切片报错了
+          // 尝试 3 次重试机制，重新 push 到数组中
+          console.log('出错了');
+          if (task.error < 3) {
+            task.error++
+            // 队首进去，准备重试
+            chunks.unshift(task);
+            start();
+          } else {
+            // 错误 3 次了，直接结束
+            isStop = true;
+            reject();
+          }
+        }
+      }
+    }
+
+
+    while(limit > 0){
+      setTimeout(() => {
+        // 模拟延迟
+        start();
+      }, Math.random() * 2000);
+
+      limit-=1;
+    }
+  });
+}
+
+const uploadChunks = async (uploadedList = []) => {
+  const list = chunks
+    .filter(chunks => uploadedList.indexOf(chunks.name) == -1)
+    .map(({ chunk, name, hash, index }) => {
+      const form = new FormData();
+      form.append('chunkname', name);
+      form.append('ext', ext(selectedFile.name));
+      form.append('hash', hash);
+      form.append('file', chunk);
+      return { form, index, error: 0 };
+    });
+
+  try {
+    await sendRequest([...list], 4);
+  } catch (error) {
+    message.error('上传似乎出了点问题～');
+  }
+}
+
 // 上传
 const handleUpload = async () => {
   if (!selectedFile) {
@@ -131,7 +211,7 @@ const handleUpload = async () => {
     return;
   }
 
-  let chunks = createFileChunk(selectedFile);
+  chunks = createFileChunk(selectedFile);
 
   // 计算 hash 文件指纹标识
   // let hash = await calculateHash(selectedFile);
@@ -141,7 +221,30 @@ const handleUpload = async () => {
 
   // 抽样哈希，牺牲一定的准确率换来效率，hash 一样的不一定是同一个文件，但是不一样的一定不是
   let hash = await calculateHashSample(selectedFile);
-  console.log(hash);
+
+  const { uploaded, uploadedList } = await check({
+    ext: ext(selectedFile.name),
+    hash
+  });
+
+  if (uploaded) {
+    return message.success('秒传：上传成功！')
+  }
+
+  chunks = chunks.map((chunk, index) => {
+    // 每一个切片的名字
+    const chunkName = `${hash}-${index}`;
+    return {
+      hash,
+      chunk: chunk.file,
+      name: chunkName,
+      index,
+      // 设置进度条
+      progress: uploadedList.indexOf(chunkName) > -1 ? 100 : 0
+    }
+  });
+
+  await uploadChunks(uploadedList);
 }
 
 // 慢上传
