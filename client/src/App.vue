@@ -15,10 +15,7 @@
       <a-divider />
 
       <input type="file" name="file" @change="handleFileChange" />
-      <a-space>
-        <a-button type="primary" @click="handleUpload">上传</a-button>
-        <a-button type="primary" @click="handleSlowUpload">慢启动上传</a-button>
-      </a-space>
+      <a-button type="primary" @click="handleUpload">上传</a-button>
 
       <a-progress :percent="uploadProgress" />
     </a-layout-content>
@@ -111,11 +108,6 @@ const handleUpload = async () => {
   });
 
   await uploadChunks(uploadedList);
-}
-
-// 慢上传
-const handleSlowUpload = () => {
-
 }
 
 const uploadChunks = async (uploadedList = []) => {
