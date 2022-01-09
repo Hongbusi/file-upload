@@ -16,10 +16,11 @@
 import { ref } from 'vue';
 import sparkMd5 from 'spark-md5';
 import { message } from 'ant-design-vue';
-import { check, upload } from '@/api';
+import { check, upload, merge } from '@/api';
 
 const CHUNK_SIZE = 1 * 1024 * 1024; // 1M
 let selectedFile = null;
+let hash = null;
 let chunks = [];
 let hashProgress = ref(0);
 
@@ -185,6 +186,14 @@ const sendRequest = (chunks, limit = 4) => {
   });
 }
 
+const mergeRequest = async () => {
+  await merge({
+    ext: ext(selectedFile.name),
+    size: CHUNK_SIZE,
+    hash
+  });
+}
+
 const uploadChunks = async (uploadedList = []) => {
   const list = chunks
     .filter(chunks => uploadedList.indexOf(chunks.name) == -1)
@@ -199,6 +208,10 @@ const uploadChunks = async (uploadedList = []) => {
 
   try {
     await sendRequest([...list], 4);
+    if (uploadedList.length + list.length === chunks.length) {
+      console.log('fsa');
+      await mergeRequest();
+    }
   } catch (error) {
     message.error('上传似乎出了点问题～');
   }
@@ -220,7 +233,7 @@ const handleUpload = async () => {
   // let hash = await calculateHashIdle(chunks);
 
   // 抽样哈希，牺牲一定的准确率换来效率，hash 一样的不一定是同一个文件，但是不一样的一定不是
-  let hash = await calculateHashSample(selectedFile);
+  hash = await calculateHashSample(selectedFile);
 
   const { uploaded, uploadedList } = await check({
     ext: ext(selectedFile.name),

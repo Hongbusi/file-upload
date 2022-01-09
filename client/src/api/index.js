@@ -22,3 +22,11 @@ export function upload(data) {
     data
   });
 }
+
+export function merge(data) {
+  return service({
+    url: '/merge',
+    method: 'post',
+    data
+  });
+}
