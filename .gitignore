@@ -1,4 +1,8 @@
 node_modules
 dist
 logs
-run
+
+app/run
+server/app/public/
+server/app/run/
+server/run/
