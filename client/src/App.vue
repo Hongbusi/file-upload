@@ -78,10 +78,10 @@ const handleUpload = async () => {
   const chunks = createFileChunk(file);
 
   // 计算 hash 文件指纹标识
-  // hash = await calculateHash(file);
+  // state.hash = await calculateHash(file);
   // web-worker 防止卡顿主线程（略）
   // requestIdleCallback
-  // hash = await calculateHashIdle(chunks);
+  // state.hash = await calculateHashIdle(chunks);
 
   // 抽样哈希，牺牲一定的准确率换来效率，hash 一样的不一定是同一个文件，但是不一样的一定不是
   state.hash = await calculateHashSample(file);

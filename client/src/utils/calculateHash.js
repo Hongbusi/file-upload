@@ -49,7 +49,7 @@ const calculateHashIdle = async chunks => {
   });
 }
 
-const calculateHashSample = file => {
+const calculateHashSample = async file => {
   return new Promise(resolve => {
     const spark = new sparkMd5.ArrayBuffer();
     const reader = new FileReader();
@@ -57,11 +57,12 @@ const calculateHashSample = file => {
     const size = file.size;
     let offset = 2 * 1024 * 1024;
 
-    let chunks = [file.slice[0, offset]];
+    let chunks = [file.slice(0, offset)];
 
     let cur = offset;
 
     while (cur < size) {
+      // 最后一块全部加进来
       if (cur + offset >= size) {
         chunks.push(file.slice(cur, cur + offset));
       } else {
@@ -79,7 +80,6 @@ const calculateHashSample = file => {
     reader.readAsArrayBuffer(new Blob(chunks));
     reader.onload = e => {
       spark.append(e.target.result);
-      // hashProgress.value = 100;
       resolve(spark.end());
     }
   });
