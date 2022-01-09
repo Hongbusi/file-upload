@@ -5,4 +5,6 @@ module.exports = app => {
   router.post('/check', controller.home.check);
   router.post('/upload', controller.home.upload);
   router.post('/merge', controller.home.merge);
+
+  router.get('/file', controller.file.fileList);
 };

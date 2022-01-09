@@ -7,14 +7,18 @@
         <a-button type="primary" @click="handleUpload">上传</a-button>
         <a-button type="primary" @click="handleSlowUpload">慢启动上传</a-button>
       </a-space>
+
+      <div v-for="(file, index) in fileList.data" :key="index">{{ file }}</div>
     </a-layout-content>
     <a-layout-footer>Copyright © 2021-present Hongbusi</a-layout-footer>
   </a-layout>
 </template>
 
 <script setup>
+import { reactive, onMounted } from 'vue';
 import { message } from 'ant-design-vue';
 import { check, upload, merge } from '@/api';
+import { getFileList } from '@/api/file';
 import { ext, createFileChunk } from '@/utils';
 import { calculateHash, calculateHashIdle, calculateHashSample } from '@/utils/calculateHash';
 
@@ -22,6 +26,17 @@ const CHUNK_SIZE = 1 * 1024 * 1024; // 1M
 let selectedFile = null;
 let hash = null;
 let chunks = [];
+
+// 获取文件列表
+const fileList = reactive({ data: [] });
+const fetchFileList = async () => {
+  const { data } = await getFileList();
+  fileList.data = data;
+}
+
+onMounted(() => {
+  fetchFileList();
+});
 
 const handleFileChange = (e) => {
   const [file] = e.target.files;
