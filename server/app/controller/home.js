@@ -34,6 +34,16 @@ class HomeController extends Controller {
     };
   }
 
+  async merge() {
+    const { ext, size, hash } = this.ctx.request.body;
+    const filePath = path.resolve(this.config.UPLOAD_DIR, `${hash}.${ext}`);
+    await this.ctx.service.upload.mergeFileChunk(filePath, hash, size);
+    this.ctx.body = {
+      code: 0,
+      message: '合并成功'
+    };
+  }
+
   async upload() {
     const { ctx } = this;
 
@@ -56,7 +66,7 @@ class HomeController extends Controller {
     if (fse.existsSync(filePath)) {
       return ctx.body = {
         code: -1,
-        meaasge: '文件存在',
+        message: '文件存在',
         url: `/public/${filePath}`
       };
     }
@@ -69,7 +79,7 @@ class HomeController extends Controller {
     ctx.body = {
       code: 0,
       message: '上传成功',
-      url: `/public/${filepath}`
+      url: `/public/${filename}`
     }
 
   }

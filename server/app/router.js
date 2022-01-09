@@ -4,4 +4,5 @@ module.exports = app => {
   router.get('/', controller.home.index);
   router.post('/check', controller.home.check);
   router.post('/upload', controller.home.upload);
+  router.post('/merge', controller.home.merge);
 };
