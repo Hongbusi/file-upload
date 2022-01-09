@@ -11,6 +11,13 @@ class HomeController extends Controller {
 
   async fileList() {
     const { ctx, config  } = this;
+
+    if (!fse.existsSync(config.UPLOAD_DIR)) {
+      return ctx.body = {
+        data: []
+      }
+    }
+
     let data = await fse.readdir(config.UPLOAD_DIR);
     ctx.body = {
       data
